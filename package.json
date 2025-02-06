@@ -4,8 +4,8 @@
   "description": "Educational project",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon server.js"
+    "postinstall": "npx prisma generate",
+    "build": "prisma generate"
   },
   "author": "Nome do aluno",
   "license": "ISC",
