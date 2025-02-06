@@ -1,0 +1,95 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model users {
+  id               Int     @id @default(autoincrement())
+  username         String  @unique
+  email            String  @unique
+  password_hash    String
+  full_name        String?
+  daily_health_metrics daily_health_metrics[]
+  physical_activities  physical_activities[]
+  goals            goals[]
+  created_groups   groups[] @relation("user_created_groups")
+  posts            posts[]
+
+  @@index([username])
+}
+
+model daily_health_metrics {
+  id               Int     @id @default(autoincrement())
+  user_id          Int
+  user             users   @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  date             DateTime @default(now()) @db.Date
+  calories_consumed Int?
+  water_consumed_ml Int?
+  steps_count      Int?
+  weight_kg        Decimal? @db.Decimal(5,2)
+  sleep_quality    Int? @default(0) @db.SmallInt
+  sleep_hours      Decimal? @db.Decimal(4,2)
+
+  @@unique([user_id, date]) 
+  @@index([user_id, date])
+}
+
+model physical_activities {
+  id               Int     @id @default(autoincrement())
+  user_id          Int
+  user             users   @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  activity_type    String
+  duration_minutes Int?
+  calories_burned  Int?
+  date             DateTime
+
+  @@index([user_id, date])
+}
+
+model goals {
+  id          Int     @id @default(autoincrement())
+  user_id     Int
+  user        users   @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  title       String
+  description String?
+  target_value Decimal? @db.Decimal(10,2)
+  status      String  @default("active")
+  created_at  DateTime @default(now())
+
+  @@index([user_id, status])
+  @@index([created_at])
+}
+
+model groups {
+  id          Int     @id @default(autoincrement())
+  name        String
+  description String?
+  image_path  String?
+  created_by  Int
+  creator     users   @relation(fields: [created_by], references: [id], onDelete: Cascade, name: "user_created_groups")
+  posts       posts[]
+  created_at  DateTime @default(now())
+
+  @@index([created_by])
+  @@index([created_at])
+}
+
+model posts {
+  id          Int     @id @default(autoincrement())
+  user_id     Int
+  user        users   @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  group_id    Int
+  group       groups  @relation(fields: [group_id], references: [id], onDelete: Cascade)
+  title       String
+  content     String
+  category    String?
+  likes_count Int @default(0)
+  created_at  DateTime @default(now())
+
+  @@index([user_id, created_at])
+  @@index([group_id, created_at])
+}
