@@ -1,7 +1,6 @@
 require("dotenv").config();
 const express = require("express");
 const bodyParser = require("body-parser");
-const cors = require("cors");
 const path = require("path");
 const router = require("./api/routes/");
 
@@ -9,24 +8,6 @@ const app = express();
 
 // Middleware para JSON
 app.use(bodyParser.json());
-
-// Configuração do CORS
-const allowedOrigins = [
-    "http://127.0.0.1:5500",
-    "http://saboresdodouro.com", 
-];
-
-app.use(cors({
-    origin: (origin, callback) => {
-        if (!origin || allowedOrigins.includes(origin)) {
-            callback(null, true);
-        } else {
-            callback(new Error("Not allowed by CORS"));
-        }
-    },
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-}));
 
 // Servir imagens 
 app.use("/images", express.static(path.join(__dirname, "images")));
