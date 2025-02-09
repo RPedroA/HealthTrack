@@ -79,12 +79,18 @@ const registerUser = async (req, res) => {
 
     // Cria o token JWT
     const token = jwt.sign(
-      { id: user.id, email: user.email },
+      { id: user.id, email: user.email, full_name: user.full_name },
       process.env.JWT_SECRET,
       { expiresIn: "1h" }
     );
 
-    return res.status(201).json({ user, token });
+    // Retorna o token e os dados do utilizador
+    return res.status(201).json({
+      token,
+      userId: user.id,
+      userEmail: user.email,
+      userFullName: user.full_name,
+    });
   } catch (error) {
     console.error("Erro ao criar utilizador:", error.message);
 
@@ -148,14 +154,19 @@ const loginUser = async (req, res) => {
     }
 
     // Cria o token
-  const token = jwt.sign(
-    { id: user.id, email: user.email, full_name: user.full_name }, 
-    process.env.JWT_SECRET,
-    { expiresIn: "1h" }
-  );
-  
+    const token = jwt.sign(
+      { id: user.id, email: user.email, full_name: user.full_name },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
+    );
 
-    return res.status(200).json({ token });
+    // Retorna o token e os dados do utilizador
+    return res.status(200).json({
+      token,
+      userId: user.id,
+      userEmail: user.email,
+      userFullName: user.full_name,
+    });
   } catch (error) {
     console.error("Erro no login:", error.message);
     return res.status(500).json({
@@ -175,7 +186,7 @@ const logoutUser = (req, res) => {
   try {
     const tokenValue = token.startsWith("Bearer ") ? token.slice(7) : token;
 
-    // Adiciona o token a blacklist
+    // Adiciona o token à blacklist
     tokenBlacklist.add(tokenValue);
 
     return res.status(200).json({
