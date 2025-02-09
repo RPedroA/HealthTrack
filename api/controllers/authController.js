@@ -148,11 +148,12 @@ const loginUser = async (req, res) => {
     }
 
     // Cria o token
-    const token = jwt.sign(
-      { id: user.id, email: user.email },
-      process.env.JWT_SECRET,
-      { expiresIn: "1h" }
-    );
+  const token = jwt.sign(
+    { id: user.id, email: user.email, full_name: user.full_name }, 
+    process.env.JWT_SECRET,
+    { expiresIn: "1h" }
+  );
+  
 
     return res.status(200).json({ token });
   } catch (error) {
