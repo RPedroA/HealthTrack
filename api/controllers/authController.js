@@ -27,7 +27,6 @@ const registerUser = async (req, res) => {
     });
   }
 
-  // Verificação dos dados
   if (typeof username !== "string" || username.length < 3) {
     invalidParams.push("username (deve ter pelo menos 3 caracteres)");
   }
@@ -79,7 +78,7 @@ const registerUser = async (req, res) => {
 
     // Cria o token JWT
     const token = jwt.sign(
-      { id: user.id, email: user.email },
+      { id: user.id, email: user.email, full_name: user.full_name },
       process.env.JWT_SECRET,
       { expiresIn: "1h" }
     );
@@ -148,14 +147,13 @@ const loginUser = async (req, res) => {
     }
 
     // Cria o token
-  const token = jwt.sign(
-    { id: user.id, email: user.email, full_name: user.full_name }, 
-    process.env.JWT_SECRET,
-    { expiresIn: "1h" }
-  );
-  
+    const token = jwt.sign(
+      { id: user.id, email: user.email, full_name: user.full_name },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
+    );
 
-    return res.status(200).json({ token });
+    return res.status(200).json({ token, user: { id: user.id, email: user.email, full_name: user.full_name } });
   } catch (error) {
     console.error("Erro no login:", error.message);
     return res.status(500).json({
@@ -164,7 +162,6 @@ const loginUser = async (req, res) => {
     });
   }
 };
-
 const logoutUser = (req, res) => {
   const token = req.headers["authorization"];
 
@@ -195,3 +192,4 @@ module.exports = {
   loginUser,
   logoutUser,
 };
+
