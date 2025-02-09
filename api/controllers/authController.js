@@ -11,14 +11,14 @@ function isValidEmail(email) {
 }
 
 const registerUser = async (req, res) => {
-  const { username, email, password, full_name } = req.body;
+  const { username, email, password_hash, full_name } = req.body;
 
   const missingParams = [];
   const invalidParams = [];
 
   if (!username) missingParams.push("username");
   if (!email) missingParams.push("email");
-  if (!password) missingParams.push("password");
+  if (!password_hash) missingParams.push("password_hash");
 
   if (missingParams.length > 0) {
     return res.status(400).json({
@@ -27,14 +27,15 @@ const registerUser = async (req, res) => {
     });
   }
 
+  // Verificação dos dados
   if (typeof username !== "string" || username.length < 3) {
     invalidParams.push("username (deve ter pelo menos 3 caracteres)");
   }
   if (typeof email !== "string" || !isValidEmail(email)) {
     invalidParams.push("email (formato inválido)");
   }
-  if (typeof password !== "string" || password.length < 6) {
-    invalidParams.push("password (mínimo de 6 caracteres)");
+  if (typeof password_hash !== "string" || password_hash.length < 6) {
+    invalidParams.push("password_hash (mínimo de 6 caracteres)");
   }
   if (
     full_name !== undefined &&
@@ -63,29 +64,27 @@ const registerUser = async (req, res) => {
       });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    // Encripta a password_hash
+    const hashedpassword_hash = await bcrypt.hash(password_hash, 10);
 
+    // Cria o utilizador na base de dados
     const user = await prisma.users.create({
       data: {
         username,
         email,
-        password_hash: hashedPassword,
+        password_hash: hashedpassword_hash,
         full_name,
       },
     });
 
+    // Cria o token JWT
     const token = jwt.sign(
-      { id: user.id, email: user.email, full_name: user.full_name },
+      { id: user.id, email: user.email },
       process.env.JWT_SECRET,
       { expiresIn: "1h" }
     );
 
-    return res.status(201).json({
-      token,
-      userId: user.id,
-      userEmail: user.email,
-      userFullName: user.full_name,
-    });
+    return res.status(201).json({ user, token });
   } catch (error) {
     console.error("Erro ao criar utilizador:", error.message);
 
@@ -104,13 +103,13 @@ const registerUser = async (req, res) => {
 };
 
 const loginUser = async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password_hash } = req.body;
 
   const missingParams = [];
   const invalidParams = [];
 
   if (!email) missingParams.push("email");
-  if (!password) missingParams.push("password");
+  if (!password_hash) missingParams.push("password_hash");
 
   if (missingParams.length > 0) {
     return res.status(400).json({
@@ -122,8 +121,8 @@ const loginUser = async (req, res) => {
   if (typeof email !== "string" || !isValidEmail(email)) {
     invalidParams.push("email (formato inválido)");
   }
-  if (typeof password !== "string" || password.length < 6) {
-    invalidParams.push("password (mínimo de 6 caracteres)");
+  if (typeof password_hash !== "string" || password_hash.length < 6) {
+    invalidParams.push("password_hash (mínimo de 6 caracteres)");
   }
 
   if (invalidParams.length > 0) {
@@ -142,23 +141,21 @@ const loginUser = async (req, res) => {
       return res.status(400).json({ erro: "Usuário não encontrado." });
     }
 
-    const passwordIsValid = await bcrypt.compare(password, user.password_hash);
-    if (!passwordIsValid) {
+    // Verifica a password_hash
+    const password_hashIsValid = await bcrypt.compare(password_hash, user.password_hash);
+    if (!password_hashIsValid) {
       return res.status(400).json({ erro: "Senha incorreta." });
     }
 
-    const token = jwt.sign(
-      { id: user.id, email: user.email, full_name: user.full_name },
-      process.env.JWT_SECRET,
-      { expiresIn: "1h" }
-    );
+    // Cria o token
+  const token = jwt.sign(
+    { id: user.id, email: user.email, full_name: user.full_name }, 
+    process.env.JWT_SECRET,
+    { expiresIn: "1h" }
+  );
+  
 
-    return res.status(200).json({
-      token,
-      userId: user.id,
-      userEmail: user.email,
-      userFullName: user.full_name,
-    });
+    return res.status(200).json({ token });
   } catch (error) {
     console.error("Erro no login:", error.message);
     return res.status(500).json({
@@ -178,6 +175,7 @@ const logoutUser = (req, res) => {
   try {
     const tokenValue = token.startsWith("Bearer ") ? token.slice(7) : token;
 
+    // Adiciona o token a blacklist
     tokenBlacklist.add(tokenValue);
 
     return res.status(200).json({
