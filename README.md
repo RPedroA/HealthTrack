@@ -25,13 +25,3 @@ A aplicação oferece uma interface moderna e intuitiva, sendo responsiva para u
 - **Autenticação**: A gestão de autenticação e sessões é feita através de **JWT (JSON Web Tokens)**, garantindo que a comunicação entre o frontend e o backend seja segura.
 
 - **Segurança de Senhas**: As senhas dos utilizadores são encriptadas utilizando **bcrypt**, garantindo a segurança dos dados sensíveis.
-
-## Como Começar
-
-Para começar a usar a aplicação, é necessário configurar tanto o backend como o frontend. Abaixo estão as instruções básicas para configurar ambos os componentes.
-
-### Backend
-1. Navega até à pasta do backend.
-2. Instala as dependências:
-   ```bash
-   npm install
