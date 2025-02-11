@@ -131,22 +131,42 @@ const deletePost = async (req, res) => {
 
 //Pesquisa
 const searchPosts = async (req, res) => {
-  const { query } = req.query;
+  const { query, user_id, group_id, category } = req.query;
 
-  if (!query) {
-    return res.status(400).json({ erro: "O parâmetro 'query' é obrigatório para a pesquisa." });
+  const searchConditions = {};
+
+  if (query) {
+    searchConditions.title = {
+      contains: query,
+      mode: "insensitive", 
+    };
+    searchConditions.content = {
+      contains: query,
+      mode: "insensitive", 
+    };
+  }
+
+  if (user_id) {
+    searchConditions.user_id = parseInt(user_id, 10);
+  }
+
+  if (group_id) {
+    searchConditions.group_id = parseInt(group_id, 10);
+  }
+
+  if (category) {
+    searchConditions.category = {
+      contains: category,
+      mode: "insensitive", 
+    };
   }
 
   try {
     const posts = await prisma.posts.findMany({
-      where: {
-        title: {
-          contains: query,
-          mode: "insensitive",
-        },
-      },
+      where: searchConditions,
       include: {
         user: { select: { id: true, username: true } },
+        group: { select: { id: true, name: true } },
       },
     });
 
@@ -159,6 +179,7 @@ const searchPosts = async (req, res) => {
     });
   }
 };
+
 
 //Atualiza likes
 const updateLikes = async (req, res) => {
