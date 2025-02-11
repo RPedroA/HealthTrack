@@ -1,0 +1,8 @@
+.item-hover {
+    transition: all 0.3s ease-in-out;
+  }
+  
+  .item-hover:hover {
+    background-color: rgba(0, 255, 127, 0.1);
+    transform: scale(1.03);
+  }

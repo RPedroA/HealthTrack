@@ -1,0 +1,23 @@
+.homepage-container {
+  background-image: url("/homebk.png");
+}
+
+.bold-text {
+  font-weight: bold !important;
+}
+
+.bg-light {
+  background-color: rgba(
+    248,
+    249,
+    250,
+  ) !important; 
+}
+
+.rounded {
+  border-radius: 1.5rem !important;
+}
+
+.shadow {
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}

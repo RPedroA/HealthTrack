@@ -1,0 +1,41 @@
+.item-hover {
+  transition: all 0.3s ease-in-out!important;
+}
+
+.item-hover:hover {
+  background-color: rgba(0, 255, 127, 0.1)!important;
+  transform: scale(1.03)!important;
+}
+
+.custom-date-input {
+  background-color: #ffffff!important;
+  color: #198754!important;
+  padding: 10px!important;
+  border-radius: 5px!important;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2)!important;
+  transition: all 0.3s ease-in-out!important;
+}
+
+.custom-date-input:focus {
+  outline: none!important;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2)!important;
+}
+
+.custom-date-input:hover {
+  background-color: #e6f2e6!important;
+}
+
+input[type="date"]::-webkit-datetime-edit {
+  color: #198754!important;
+  background-color: white!important;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(37%) sepia(75%) saturate(384%) hue-rotate(100deg) brightness(90%) contrast(93%)!important;
+  cursor: pointer!important;
+}
+
+.big-bold {
+  font-size: 3em!important;
+  font-weight: bold!important;
+}
