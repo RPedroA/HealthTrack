@@ -13,7 +13,6 @@ app.use(bodyParser.json());
 // Configuração do CORS
 app.use(cors({
     origin: (origin, callback) => {
-        // Permite qualquer origem que tenha "localhost" no domínio
         if (!origin || /localhost/.test(origin)) {
             callback(null, true);
         } else {
